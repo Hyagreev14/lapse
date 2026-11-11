@@ -105,24 +105,60 @@ if __name__ == "__main__":
     default_out = os.path.join(os.environ['USERPROFILE'], 'Desktop')
     default_name = f"timelapse_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
 
-    parser = argparse.ArgumentParser(description="CLI Screen Capture & Timelapse Builder")
-    
-    # -i / --interval
-    parser.add_argument("-i", "--interval", type=float, default=5.0,
-                        help="Capture frequency in seconds (e.g., 5 for taking a screenshot every 5s)")
-    
-    # -d / --duration
-    parser.add_argument("-d", "--duration", type=float, default=1.0,
-                        help="How long each screenshot lasts in the final video in seconds (e.g., 1 or 0.5)")
-    
-    # -o / --output
-    parser.add_argument("-o", "--output", type=str, default=default_out,
-                        help="Path to the final output destination directory")
-    
-    # -n / --name
-    parser.add_argument("-n", "--name", type=str, default=default_name,
-                        help="Name of the final video file (e.g., output.mp4)")
+    parser = argparse.ArgumentParser(
+        prog="lapse",
+        description=(
+            "Capture your Windows desktop at a chosen interval and turn the "
+            "screenshots into an MP4 timelapse.\n\n"
+            "Capture continues until you press Ctrl+C; Lapse then builds the video."
+        ),
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog="""Examples:
+  lapse
+  lapse --interval 10
+  lapse --interval 5 --duration 0.5
+  lapse --output "D:\\Videos\\Timelapses" --name "atlas-session.mp4"
 
+Requirements:
+  - Windows desktop
+  - FFmpeg installed and available in PATH
+
+Press Ctrl+C while capturing to finish and export the timelapse."""
+    )
+
+    parser.add_argument(
+        "-i", "--interval",
+        type=float,
+        default=5.0,
+        metavar="SECONDS",
+        help="Time between desktop screenshots"
+    )
+
+    parser.add_argument(
+        "-d", "--duration",
+        type=float,
+        default=1.0,
+        metavar="SECONDS",
+        help="Playback duration of each screenshot in the exported video"
+    )
+
+    parser.add_argument(
+        "-o", "--output",
+        type=str,
+        default=default_out,
+        metavar="DIRECTORY",
+        help="Directory where the MP4 will be saved"
+    )
+
+    parser.add_argument(
+        "-n", "--name",
+        type=str,
+        default=default_name,
+        metavar="FILENAME",
+        help="Name of the exported MP4 file"
+    )
+
+    # argparse automatically provides -h / --help.
     args = parser.parse_args()
     
     # Quick sanity check for extension safety
